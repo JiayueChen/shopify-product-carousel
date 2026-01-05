@@ -68,7 +68,7 @@
                     {% if i <= rating_floor %}
                       {% render 'star' %}
                     {% elsif i == partial_star_position and decimal > 0 %}
-                      {% assign offset = 1 | minus: decimal %}
+                      {% assign offset = decimal %}
                       {% assign star_id = product.id | append: '-' | append: i %}
                       {% render 'empty-star'
                         , offset: offset
