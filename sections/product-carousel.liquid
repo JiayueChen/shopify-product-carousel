@@ -1,6 +1,6 @@
 {{ 'product-carousel.css' | asset_url | stylesheet_tag }}
 
-<section class="product-carousel-section py-9 overflow-hidden md:pt-20 md:pb-25 px-6 md:px-0">
+<section class="product-carousel-section py-9 overflow-hidden md:pt-20 md:pb-25 px-6 md:px-0" data-visible-count="{{ section.settings.products_to_show }}">
   <header class="flex justify-between items-center mb-6 md:mb-9 md:px-32">
     <h2 class="section-title">
       {{ section.settings.section_title }}
@@ -18,7 +18,7 @@
     class="product-card-carousel scrollbar"
     role="list"
     data-product-carousel>
-    {% for product in section.settings.collection.products limit: section.settings.products_to_show %}
+    {% for product in section.settings.collection.products %}
       <li class="product-card relative">
         <a href="{{ product.url }}" class="product-card-link inline-block">
           <article aria-labelledby="product-title-{{ product.id }}">

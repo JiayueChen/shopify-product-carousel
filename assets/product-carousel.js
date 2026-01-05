@@ -1,4 +1,5 @@
-const VISIBLE_MOBILE_COUNT = 4;
+const section = document.querySelector('.product-carousel-section');
+const VISIBLE_MOBILE_COUNT = parseInt(section?.dataset.visibleCount) || 4;
 const showMoreBtn = document.querySelector('[data-show-more]');
 const productCards = Array.from(document.querySelectorAll('.product-card'));
 const productList = document.querySelector('[data-product-carousel]');
