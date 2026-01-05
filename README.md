@@ -19,4 +19,3 @@ Preview Link: https://test-store-1100000000000000000000000000000003180.myshopify
 
 ## Known Issues
 - Scrollbar styling not fully optimized for all Shopify theme variations
-- Star rating icon size may need adjustment for certain themes
