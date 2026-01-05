@@ -1,103 +1,135 @@
 {{ 'product-carousel.css' | asset_url | stylesheet_tag }}
 
 <section class="product-carousel-section py-9 overflow-hidden md:pt-20 md:pb-25 px-6 md:px-0">
-    <header class="flex justify-between items-center mb-6 md:mb-9 md:px-32">
-        <h2 class="section-title">
-            {{ section.settings.section_title }}
-        </h2>
-        <a href="{{ section.settings.collection.url }}" class="hidden md:flex items-center shop-all-link">
-            Shop All {{ section.settings.section_title }}
-            <span class="inline-block w-5 h-5 ml-2 align-middle" aria-hidden="true">
-                {% render 'arrow-right' %}
-            </span>
-            <span class="sr-only">arrow right</span>
+  <header class="flex justify-between items-center mb-6 md:mb-9 md:px-32">
+    <h2 class="section-title">
+      {{ section.settings.section_title }}
+    </h2>
+    <a href="{{ section.settings.collection.url }}" class="hidden md:flex items-center shop-all-link">
+      Shop All {{ section.settings.section_title }}
+      <span class="inline-block w-5 h-5 ml-2 align-middle" aria-hidden="true">
+        {% render 'arrow-right' %}
+      </span>
+      <span class="sr-only">arrow right</span>
+    </a>
+  </header>
+
+  <ul
+    class="product-card-carousel scrollbar"
+    role="list"
+    data-product-carousel>
+    {% for product in section.settings.collection.products limit: section.settings.products_to_show %}
+      <li class="product-card relative">
+        <a href="{{ product.url }}" class="product-card-link inline-block">
+          <article aria-labelledby="product-title-{{ product.id }}">
+            <div class="relative">
+              <img
+                src="{{ product.featured_image | image_url: width: 355, height: 355 }}"
+                width="355"
+                height="355"
+                alt="{{ product.title }}"
+                class="product-image rounded-[10px]"
+                loading="lazy" />
+
+              {% if product.metafields.custom.product_label %}
+                <span class="absolute badge-light" aria-label="{{ product.metafields.custom.product_label }}">
+                  {{ product.metafields.custom.product_label }}
+                </span>
+              {% endif %}
+              {% if product.metafields.custom.sale_badge %}
+                <span class="absolute badge-dark" aria-label="{{ product.metafields.custom.sale_badge }}">
+                  {{ product.metafields.custom.sale_badge }}
+                </span>
+              {% endif %}
+
+              {% if product.compare_at_price > product.price %}
+                <span class="absolute badge-dark" aria-label="Save {{ product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price | round }}%">
+                  Save {{ product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price | round }}%
+                </span>
+              {% endif %}
+            </div>
+
+            <div class="product-card-content pt-3 pb-2 px-2 md:px-3 md:py-4">
+              <h3 id="product-title-{{ product.id }}" class="product-card-title mb-3">
+                {{ product.title }}
+              </h3>
+
+              <div class="flex justify-start items-center mb-2">
+                {% comment %} star rating {% endcomment %}
+                {% assign rating = product.metafields.custom.star_rating | default: 0 %}
+                {% assign review_count = product.metafields.custom.review_count | default: 0 %}
+                {% assign rating_floor = rating | floor %}
+
+                {% assign decimal = rating | minus: rating_floor %}
+                {% assign partial_star_position = rating_floor | plus: 1 %}
+
+                {% for i in (1..5) %}
+                  <span class="icon icon-star inline-block w-3 h-3" aria-hidden="true">
+                    {% if i <= rating_floor %}
+                      {% render 'star' %}
+                    {% elsif i == partial_star_position and decimal > 0 %}
+                      {% assign offset = 1 | minus: decimal %}
+                      {% assign star_id = product.id | append: '-' | append: i %}
+                      {% render 'empty-star'
+                        , offset: offset
+                        , unique_id: star_id %}
+                    {% else %}
+                      {% assign star_id = product.id | append: '-' | append: i %}
+                      {% render 'empty-star'
+                        , offset: 0
+                        , unique_id: star_id %}
+                    {% endif %}
+                  </span>
+                {% endfor %}
+
+                <span class="sr-only">Rating {{ rating }} out of 5 stars</span>
+                <span class="text-grey reviews">{{ review_count | default: 0 | append: ' Reviews' }}</span>
+              </div>
+
+              <p class="price">{{ product.price | money }}</p>
+            </div>
+          </article>
         </a>
-    </header>
+      </li>
+    {% endfor %}
+  </ul>
 
-    <ul class="product-card-carousel scrollbar" role="list" data-product-carousel>
-        {% for product in section.settings.collection.products limit: section.settings.products_to_show %}
-        <li class="product-card relative">
-            <a href="{{ product.url }}" class="product-card-link inline-block">
-                <article aria-labelledby="product-title-{{ product.id }}">
-                    <div class="relative">
-                        <img src="{{ product.featured_image | image_url: width: 355, height: 355 }}"
-                            width="355"
-                            height="355" 
-                            alt="{{ product.title }}"
-                            class="product-image rounded-[10px]" 
-                            loading="lazy" />
-                        
-                        {% if product.metafields.custom.product_label %}
-                        <span class="absolute badge-light" aria-label="{{ product.metafields.custom.product_label }}">
-                            {{ product.metafields.custom.product_label }}
-                        </span>
-                        {% endif %}
-                        {% if product.metafields.custom.sale_badge %}
-                        <span class="absolute badge-dark" aria-label="{{ product.metafields.custom.sale_badge }}">
-                            {{ product.metafields.custom.sale_badge }}
-                        </span>
-                        {% endif %}
-                        
-                        {% if product.compare_at_price > product.price %}
-                        <span class="absolute badge-dark" aria-label="Save {{ product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price | round }}%">
-                            Save {{ product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price | round }}%
-                        </span>
-                        {% endif %}
-                    </div>
-
-                    <div class="product-card-content pt-3 pb-2 px-2 md:px-3 md:py-4">
-                        <h3 id="product-title-{{ product.id }}" class="product-card-title mb-3">
-                            {{ product.title }}
-                        </h3>
-
-                        <div class="flex justify-start items-center mb-2">
-                            {% comment %} star rating {% endcomment %}
-                        </div>
-
-                        <p class="price">{{ product.price | money }}</p>
-                    </div>
-                </article>
-            </a>
-        </li>
-        {% endfor %}
-    </ul>
-
-    <button class="md:hidden mt-6 w-full button--primary" data-show-more>
-        Show More
-    </button>
+  <button class="md:hidden mt-6 w-full button--primary" data-show-more>
+    Show More
+  </button>
 </section>
 
 <script src="{{ 'product-carousel.js' | asset_url }}" defer></script>
 
 {% schema %}
-{
-  "name": "Product Carousel",
-  "settings": [
-    {
-      "type": "text",
-      "id": "section_title",
-      "label": "Section Title",
-      "default": "Best Sellers"
-    },
-    {
-      "type": "collection",
-      "id": "collection",
-      "label": "Collection"
-    },
-    {
-      "type": "range",
-      "id": "products_to_show",
-      "min": 4,
-      "max": 20,
-      "step": 1,
-      "label": "Products to Show",
-      "default": 10
-    }
-  ],
-  "presets": [
-    {
-      "name": "Product Carousel"
-    }
-  ]
-}
+  {
+    "name": "Product Carousel",
+    "settings": [
+      {
+        "type": "text",
+        "id": "section_title",
+        "label": "Section Title",
+        "default": "Best Sellers"
+      },
+      {
+        "type": "collection",
+        "id": "collection",
+        "label": "Collection"
+      },
+      {
+        "type": "range",
+        "id": "products_to_show",
+        "min": 4,
+        "max": 20,
+        "step": 1,
+        "label": "Products to Show",
+        "default": 10
+      }
+    ],
+    "presets": [
+      {
+        "name": "Product Carousel"
+      }
+    ]
+  }
 {% endschema %}
